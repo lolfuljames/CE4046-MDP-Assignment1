@@ -14,6 +14,13 @@ public class Cell{
         this.reward = -0.04;
         this.util = 0;
     }
+
+    public Cell(double util, double reward, Boolean wall){
+        this.util = util;
+        this.reward = reward;
+        this.wall = wall;
+    }
+
     public double get_util(){
         return this.util;
     }
@@ -75,5 +82,9 @@ public class Cell{
                 break;
             }
         }
+    }
+
+    public Cell copy(){
+        return new Cell(this.util, this.reward, this.wall);
     }
 }
