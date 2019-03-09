@@ -7,32 +7,32 @@ public class Cell{
     private double util;
     private double reward;
     private Boolean wall;
-    private int pos_x;
-    private int pos_y;
+    private int row;
+    private int col;
 
     //default constructor for cells (white space)
     public Cell(){
         this.wall = false;
         this.reward = -0.04;
         this.util = 0;
-        this.pos_x = 0;
-        this.pos_y = 0;
+        this.row = 0;
+        this.col = 0;
     }
 
-    public Cell(int pos_x, int pos_y){
+    public Cell(int row, int col){
         this.wall = false;
         this.reward = -0.04;
         this.util = 0;
-        this.pos_x = pos_x;
-        this.pos_y = pos_y;
+        this.row = row;
+        this.col = col;
     }
 
-    public Cell(double util, double reward, Boolean wall, int pos_x, int pos_y){
+    public Cell(double util, double reward, Boolean wall, int row, int col){
         this.util = util;
         this.reward = reward;
         this.wall = wall;
-        this.pos_x = pos_x;
-        this.pos_y = pos_y;
+        this.row = row;
+        this.col = col;
     }
 
     public double get_util(){
@@ -59,20 +59,20 @@ public class Cell{
         this.wall = wall;
     }
 
-    public int get_pos_x(){
-        return this.pos_x;
+    public int get_row(){
+        return this.row;
     }
 
-    public void set_pos_x(int pos_x){
-        this.pos_x = pos_x;
+    public void set_row(int row){
+        this.row = row;
     }
     
-    public int get_pos_y(){
-        return this.pos_y;
+    public int get_col(){
+        return this.col;
     }
     
-    public void set_pos_y(int pos_y){
-        this.pos_y = pos_y;
+    public void set_col(int col){
+        this.col = col;
     }
 
     public String toString(){
@@ -115,6 +115,6 @@ public class Cell{
     }
 
     public Cell copy(){
-        return new Cell(this.util, this.reward, this.wall, this.pos_x, this.pos_y);
+        return new Cell(this.util, this.reward, this.wall, this.row, this.col);
     }
 }
