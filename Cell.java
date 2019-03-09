@@ -5,7 +5,7 @@ public class Cell{
 
     //default constructor for cells (white space)
     public Cell(){
-        this.wall = False;
+        this.wall = false;
         this.reward = -0.04;
         this.util = 0;
     }
@@ -31,5 +31,9 @@ public class Cell{
 
     public void set_wall(Boolean wall){
         this.wall = wall;
+    }
+
+    public String toString(){
+        return Double.toString(this.reward);
     }
 }
