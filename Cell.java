@@ -3,10 +3,10 @@ public class Cell{
     private double reward;
     private Boolean wall;
 
-    // constructor for wall
+    //default constructor for cells (white space)
     public Cell(){
-        this.wall = True;
-        this.reward = 0;
+        this.wall = False;
+        this.reward = -0.04;
         this.util = 0;
     }
     public double get_util(){
