@@ -46,7 +46,7 @@ public class Cell{
     }
 
     public String toString(){
-        return String.format("%.2f",this.reward);
+        return String.format("%.2f",this.util);
     }
 
     public void set_type(Type type){
