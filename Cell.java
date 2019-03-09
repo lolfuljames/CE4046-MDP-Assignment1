@@ -1,3 +1,8 @@
+
+enum Type{
+    GREEN, WALL, ORANGE, WHITE;
+}
+
 public class Cell{
     private double util;
     private double reward;
@@ -34,6 +39,41 @@ public class Cell{
     }
 
     public String toString(){
-        return Double.toString(this.reward);
+        return String.format("%.2f",this.reward);
+    }
+
+    public void set_type(Type type){
+        switch(type){
+            case WALL:{
+                this.reward = 0;
+                this.wall = true;
+                this.util = 0;
+                break;
+            }
+            case ORANGE:{
+                this.reward = -1.00;
+                this.wall = false;
+                this.util = 0;
+                break;
+            }
+            case GREEN:{
+                this.reward = 1.00;
+                this.wall = false;
+                this.util = 0;
+                break;
+            }
+            case WHITE:{
+                this.reward = -0.04;
+                this.wall = false;
+                this.util = 0;
+                break;
+            }
+            default:{
+                this.reward = -0.04;
+                this.wall = false;
+                this.util = 0;
+                break;
+            }
+        }
     }
 }
