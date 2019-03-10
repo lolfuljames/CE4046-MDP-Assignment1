@@ -12,7 +12,7 @@ public class Grid{
 
         int[] position = new int[2]; //[row,col]
         int choice = 0;
-        int count = 0;
+        int total_count = 0;
         Type type = Type.GREEN;
         Cell cell;
 
@@ -40,6 +40,27 @@ public class Grid{
             sc.nextLine();
             if(choice == 14) break;
             switch(choice){
+                case 1  :{
+                    grid.get(0).get(0).set_type(Type.GREEN);
+                    grid.get(0).get(2).set_type(Type.GREEN);
+                    grid.get(0).get(5).set_type(Type.GREEN);
+                    grid.get(1).get(3).set_type(Type.GREEN);
+                    grid.get(2).get(4).set_type(Type.GREEN);
+                    grid.get(3).get(5).set_type(Type.GREEN);
+
+                    grid.get(0).get(1).set_type(Type.WALL);
+                    grid.get(1).get(4).set_type(Type.WALL);
+                    grid.get(3).get(1).set_type(Type.WALL);
+                    grid.get(3).get(2).set_type(Type.WALL);
+                    grid.get(3).get(3).set_type(Type.WALL);
+
+                    grid.get(1).get(1).set_type(Type.ORANGE);
+                    grid.get(1).get(5).set_type(Type.ORANGE);
+                    grid.get(2).get(2).set_type(Type.ORANGE);
+                    grid.get(3).get(3).set_type(Type.ORANGE);
+                    grid.get(4).get(4).set_type(Type.ORANGE);
+                    break;
+                }
                 case 2  :{
                     // while(true){
                     //     System.out.print("Enter row of the cell (0 is top) : ");
@@ -102,9 +123,22 @@ public class Grid{
                 }
                 case 4  :{
                     System.out.print("Enter number of iterations:");
-                    count = sc.nextInt();
+                    total_count = sc.nextInt();
                     sc.nextLine();
-                    value_iteration(grid,count);
+                    for(int count=0; count<total_count; count++){
+                        value_iteration(grid);
+                        System.out.printf("-----------------------ITERATION #%d --------------------------", count);
+                        System.out.println("----------------------------------------------");
+                        for(int i=0; i<grid.size(); i++){
+                            for(int j=0; j<grid.get(i).size(); j++){
+                                System.out.print("| ");
+                                System.out.print(grid.get(i).get(j));
+                                System.out.print(" |");
+                            }
+                            System.out.println("");
+                            System.out.println("----------------------------------------------");
+                        }
+                    }
                     break;
                 }
                 default :{
@@ -127,7 +161,7 @@ public class Grid{
         return grid.get(position[0]).get(position[1]);
     }
 
-    public static void value_iteration(ArrayList<ArrayList<Cell>> grid, int max){
+    public static void value_iteration(ArrayList<ArrayList<Cell>> grid){
         ArrayList<ArrayList<Double>> grid_util = new ArrayList<ArrayList<Double>>();
         int[] position = new int[2];
         double new_util;
@@ -136,33 +170,22 @@ public class Grid{
             grid_util.add(new ArrayList<Double>());
         }
 
-        for(int count = 0; count < max; count++){
-            for(ArrayList<Cell> row: grid){
-                for(Cell selected: row){
-                    position[0] = selected.get_row();
-                    position[1] = selected.get_col();
-                    new_util = get_utility(grid, position);
-                    grid_util.get(position[0]).add(new_util);
-                }
-            }
-            update_grid(grid, grid_util);
-            System.out.printf("-----------------------ITERATION #%d --------------------------", count);
-            System.out.println("----------------------------------------------");
-            for(int i=0; i<grid.size(); i++){
-                for(int j=0; j<grid.get(i).size(); j++){
-                    System.out.print("| ");
-                    System.out.print(grid.get(i).get(j));
-                    System.out.print(" |");
-                }
-                System.out.println("");
-                System.out.println("----------------------------------------------");
+        for(ArrayList<Cell> row: grid){
+            for(Cell selected: row){
+                position[0] = selected.get_row();
+                position[1] = selected.get_col();
+                new_util = get_utility(grid, position);
+                grid_util.get(position[0]).add(new_util);
             }
         }
+        update_grid(grid, grid_util);
     }
 
     public static double get_utility(ArrayList<ArrayList<Cell>> grid, int[] position){
         double util_up=0, util_down=0, util_left=0, util_right=0;
         double weighted_util_up=0, weighted_util_down=0, weighted_util_left=0, weighted_util_right=0;
+
+        if(get_cell(grid, position).is_wall()) return 0;
 
         if(position[0] == 0) util_up = get_cell(grid,position).get_util();
         else if(grid.get(position[0]-1).get(position[1]).is_wall()) util_up = get_cell(grid,position).get_util();
