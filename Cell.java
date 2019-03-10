@@ -3,12 +3,16 @@ enum Type{
     GREEN, WALL, ORANGE, WHITE;
 }
 
+enum Choice{
+    UP, DOWN, LEFT, RIGHT, WALL;
+}
 public class Cell{
     private double util;
     private double reward;
     private Boolean wall;
     private int row;
     private int col;
+    private Choice policy;
 
     //default constructor for cells (white space)
     public Cell(){
@@ -17,6 +21,7 @@ public class Cell{
         this.util = 0;
         this.row = 0;
         this.col = 0;
+        this.policy = Choice.UP;
     }
 
     public Cell(int row, int col){
@@ -25,14 +30,16 @@ public class Cell{
         this.util = 0;
         this.row = row;
         this.col = col;
+        this.policy = Choice.UP;
     }
 
-    public Cell(double util, double reward, Boolean wall, int row, int col){
+    public Cell(double util, double reward, Boolean wall, int row, int col, Choice policy){
         this.util = util;
         this.reward = reward;
         this.wall = wall;
         this.row = row;
         this.col = col;
+        this.policy = policy;
     }
 
     public double get_util(){
@@ -75,6 +82,14 @@ public class Cell{
         this.col = col;
     }
 
+    public Choice get_policy(){
+        return this.policy;
+    }
+
+    public void set_policy(Choice policy){
+        this.policy = policy;
+    }
+
     public String toString(){
         return String.format("%5.2f",this.util);
     }
@@ -85,6 +100,7 @@ public class Cell{
                 this.reward = 0;
                 this.wall = true;
                 this.util = 0;
+                this.policy = Choice.NULL;
                 break;
             }
             case ORANGE:{
@@ -115,6 +131,6 @@ public class Cell{
     }
 
     public Cell copy(){
-        return new Cell(this.util, this.reward, this.wall, this.row, this.col);
+        return new Cell(this.util, this.reward, this.wall, this.row, this.col, this.policy);
     }
 }
