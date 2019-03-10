@@ -1,10 +1,14 @@
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class Grid{
 
     static final int SIZE = 6;
     static final double DISCOUNT = 0.99;
     static final double STRAIGHT_PROB = 0.8;
+    static final double ERROR = 0.01;
+    static boolean converge = false;
+    static final Boolean DEBUG = false;
     public static void main(String[] args) {
         Scanner sc = new Scanner (System.in);
 
@@ -41,6 +45,13 @@ public class Grid{
             if(choice == 14) break;
             switch(choice){
                 case 1  :{
+                    grid = new ArrayList<ArrayList<Cell>>();
+                    for(int i=0; i<SIZE; i++){
+                        grid.add(new ArrayList<Cell>());
+                        for(int j=0; j<SIZE; j++){
+                            grid.get(i).add(new Cell(i,j));
+                        }
+                    }
                     grid.get(0).get(0).set_type(Type.GREEN);
                     grid.get(0).get(2).set_type(Type.GREEN);
                     grid.get(0).get(5).set_type(Type.GREEN);
@@ -50,9 +61,9 @@ public class Grid{
 
                     grid.get(0).get(1).set_type(Type.WALL);
                     grid.get(1).get(4).set_type(Type.WALL);
-                    grid.get(3).get(1).set_type(Type.WALL);
-                    grid.get(3).get(2).set_type(Type.WALL);
-                    grid.get(3).get(3).set_type(Type.WALL);
+                    grid.get(4).get(1).set_type(Type.WALL);
+                    grid.get(4).get(2).set_type(Type.WALL);
+                    grid.get(4).get(3).set_type(Type.WALL);
 
                     grid.get(1).get(1).set_type(Type.ORANGE);
                     grid.get(1).get(5).set_type(Type.ORANGE);
@@ -87,7 +98,7 @@ public class Grid{
                     // }             
                     for(int i = 0; i<SIZE; i++){
                         for(int j = 0; j<SIZE; j++){
-                            System.out.printf("before i: %d, j: %d", i , j );
+                            System.out.printf("Updating cell row:%d, col: %d", i , j );
                             position[0] = i;
                             position[1] = j;
                             cell = get_cell(grid,position);
@@ -99,9 +110,7 @@ public class Grid{
                                 j--;
                             }
                             cell.set_type(type);
-                            System.out.printf("after i: %d, j: %d", i , j );
                         }
-                            System.out.println("hello");
                     }
 
 
@@ -109,36 +118,28 @@ public class Grid{
                 }
                 case 3  : {
                     System.out.println("Printing grid:");
-                    System.out.println("----------------------------------------------");
-                    for(int i=0; i<grid.size(); i++){
-                        for(int j=0; j<grid.get(i).size(); j++){
-                            System.out.print("| ");
-                            System.out.print(grid.get(i).get(j));
-                            System.out.print(" |");
-                        }
-                        System.out.println("");
-                        System.out.println("----------------------------------------------");
-                    }
+                    print_grid(grid);
                     break;
                 }
                 case 4  :{
                     System.out.print("Enter number of iterations:");
                     total_count = sc.nextInt();
                     sc.nextLine();
-                    for(int count=0; count<total_count; count++){
+                    int count;
+                    long start_time = System.currentTimeMillis();
+                    converge = false;
+                    for(count = 0; count<total_count; count++){
+                        if(converge) break;
+                        converge = true;
                         value_iteration(grid);
-                        System.out.printf("-----------------------ITERATION #%d --------------------------", count);
-                        System.out.println("----------------------------------------------");
-                        for(int i=0; i<grid.size(); i++){
-                            for(int j=0; j<grid.get(i).size(); j++){
-                                System.out.print("| ");
-                                System.out.print(grid.get(i).get(j));
-                                System.out.print(" |");
-                            }
-                            System.out.println("");
-                            System.out.println("----------------------------------------------");
+                        if(DEBUG){
+                            System.out.printf("-----------------------ITERATION #%d --------------------------", count);
+                            print_grid(grid);
                         }
                     }
+                    print_grid(grid);
+                    long duration = System.currentTimeMillis()-start_time;
+                    System.out.printf("Value Iteration took %d iterations\nElapsed for a total of %d.%d seconds\n",count,duration/1000,duration%1000);
                     break;
                 }
                 default :{
@@ -224,14 +225,28 @@ public class Grid{
         weighted_util_right = STRAIGHT_PROB*util_right + (1-STRAIGHT_PROB)*(util_up+util_down)/2;
         weighted_util_up = STRAIGHT_PROB*util_up + (1-STRAIGHT_PROB)*(util_left+util_right)/2;
 
-        return Math.max(Math.max(weighted_util_down, weighted_util_left),Math.max(weighted_util_up, weighted_util_right))*0.99 + get_cell(grid,position).get_reward();
+        return Math.max(Math.max(weighted_util_down, weighted_util_left),Math.max(weighted_util_up, weighted_util_right))*DISCOUNT + get_cell(grid,position).get_reward();
     }
 
     public static void update_grid(ArrayList<ArrayList<Cell>> grid, ArrayList<ArrayList<Double>> grid_util){
         for(int i = 0; i< SIZE; i++){
             for(int j =0; j< SIZE; j++){
+                if(Math.abs(grid.get(i).get(j).get_util()-grid_util.get(i).get(j)) > ERROR) converge = false;
                 grid.get(i).get(j).set_util(grid_util.get(i).get(j));
             }
+        }
+    }
+
+    public static void print_grid(ArrayList<ArrayList<Cell>> grid){
+        System.out.println("-------------------------------------------------------");
+        for(int i=0; i<grid.size(); i++){
+            for(int j=0; j<grid.get(i).size(); j++){
+                System.out.print("| ");
+                System.out.print(grid.get(i).get(j));
+                System.out.print(" |");
+            }
+            System.out.println("");
+            System.out.println("-------------------------------------------------------");
         }
     }
 }
