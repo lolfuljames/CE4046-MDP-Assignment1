@@ -207,7 +207,9 @@ public class Grid{
             return 0;
         }
         if(position[0] == 0) util_up = get_cell(grid,position).get_util();
-        else if(grid.get(position[0]-1).get(position[1]).is_wall()) util_up = get_cell(grid,position).get_util();
+        else if(grid.get(position[0]-1).get(position[1]).is_wall()) {
+            util_up = get_cell(grid,position).get_util();
+        }
         else{
             position[0]--;
             util_up = get_cell(grid,position).get_util();
@@ -230,11 +232,11 @@ public class Grid{
             position[1]++;
         }
 
-        if(position[1] == SIZE-1) util_down = get_cell(grid,position).get_util();
-        else if(grid.get(position[0]).get(position[1]+1).is_wall()) util_down = get_cell(grid,position).get_util();
+        if(position[1] == SIZE-1) util_right = get_cell(grid,position).get_util();
+        else if(grid.get(position[0]).get(position[1]+1).is_wall()) util_right = get_cell(grid,position).get_util();
         else{
             position[1]++;
-            util_down = get_cell(grid,position).get_util();
+            util_right = get_cell(grid,position).get_util();
             position[1]--;
         }
 
