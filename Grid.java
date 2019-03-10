@@ -175,6 +175,11 @@ public class Grid{
         return grid.get(position[0]).get(position[1]);
     }
 
+    /*
+     * Iterates through the grid using current grid's value.
+     * Grid is updated after each function call.
+     * For n iterations, call it n times.
+     */
     public static void iterate_grid(ArrayList<ArrayList<Cell>> grid){
         ArrayList<ArrayList<Double>> grid_util = new ArrayList<ArrayList<Double>>();
         ArrayList<ArrayList<Choice>> grid_policy = new ArrayList<ArrayList<Choice>>();
@@ -198,6 +203,11 @@ public class Grid{
         update_policy(grid, grid_policy);
     }
 
+    /*
+     * Function to get the utility of a single cell.
+     * Policy (Choice) of each state is updated in grid_policy.
+     * Utility is returned.
+     */
     public static double get_utility(ArrayList<ArrayList<Cell>> grid, ArrayList<ArrayList<Choice>> grid_policy, int[] position){
         double util_up=0, util_down=0, util_left=0, util_right=0;
         double weighted_util_left=0, weighted_util_right=0, weighted_util_up=0, weighted_util_down=0, weighted_util_choice=0;
@@ -254,6 +264,10 @@ public class Grid{
         return weighted_util_choice*DISCOUNT + get_cell(grid,position).get_reward();
     }
 
+    /*
+     * Updates the grid's utility based on current iteration's newest utility.
+     * Convergence logic is also present.
+     */
     public static void update_grid(ArrayList<ArrayList<Cell>> grid, ArrayList<ArrayList<Double>> grid_util){
         for(int i = 0; i< SIZE; i++){
             for(int j =0; j< SIZE; j++){
@@ -263,6 +277,10 @@ public class Grid{
         }
     }
 
+    /*
+     * Updates the grid's policy based on current iteration's newest policy.
+     * Convergence logic is also present.
+     */
     public static void update_policy(ArrayList<ArrayList<Cell>> grid, ArrayList<ArrayList<Choice>> grid_policy){
         for(int i = 0; i< SIZE; i++){
             for(int j =0; j< SIZE; j++){
