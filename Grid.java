@@ -8,7 +8,7 @@ public class Grid{
     static final double STRAIGHT_PROB = 0.8;
     static final double ERROR = 0.01;
     static boolean converge = false;
-    static final Boolean DEBUG = false;
+    static final Boolean DEBUG = true;
     static boolean value_iteration = false;
     public static void main(String[] args) {
         Scanner sc = new Scanner (System.in);
@@ -111,8 +111,10 @@ public class Grid{
                         if(DEBUG){
                             System.out.printf("-----------------------ITERATION #%d --------------------------", count);
                             print_util(grid);
+                            print_policy(grid);
                         }
                     }
+                    System.out.println("\nITERATION COMPLETE!\n");
                     print_util(grid);
                     print_policy(grid);
                     long duration = System.currentTimeMillis()-start_time;
@@ -134,6 +136,7 @@ public class Grid{
                         if(DEBUG){
                             System.out.printf("-----------------------ITERATION #%d --------------------------", count);
                             print_util(grid);
+                            print_policy(grid);
                         }
                     }
                     print_util(grid);
