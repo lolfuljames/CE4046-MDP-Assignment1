@@ -100,7 +100,7 @@ public class Cell{
                 this.reward = 0;
                 this.wall = true;
                 this.util = 0;
-                this.policy = Choice.NULL;
+                this.policy = Choice.WALL;
                 break;
             }
             case ORANGE:{
