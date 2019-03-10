@@ -76,7 +76,7 @@ public class Cell{
     }
 
     public String toString(){
-        return String.format("%.2f",this.util);
+        return String.format("%5.2f",this.util);
     }
 
     public void set_type(Type type){
