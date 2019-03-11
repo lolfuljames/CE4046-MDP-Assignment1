@@ -21,7 +21,7 @@ public class Cell{
         this.util = 0;
         this.row = 0;
         this.col = 0;
-        this.policy = Choice.WALL;
+        this.policy = Choice.UP;
     }
 
     public Cell(int row, int col){
@@ -30,7 +30,7 @@ public class Cell{
         this.util = 0;
         this.row = row;
         this.col = col;
-        this.policy = Choice.WALL;
+        this.policy = Choice.UP;
     }
 
     public Cell(double util, double reward, Boolean wall, int row, int col, Choice policy){
