@@ -6,9 +6,9 @@ public class Grid{
     static final int SIZE = 6;
     static final double DISCOUNT = 0.99;
     static final double STRAIGHT_PROB = 0.8;
-    static final double ERROR = 0.01;
+    static double error = 0.00001;
     static boolean converge = false;
-    static final Boolean DEBUG = true;
+    static final Boolean DEBUG = false;
     static boolean value_iteration = false;
     static final int POLICY_EVALUATE_COUNT = 500;
     static int total_count = 0;
@@ -41,7 +41,8 @@ public class Grid{
                             + "||     3: Value Iteration                               ||\n"   
                             + "||     4: Policy Iteration                              ||\n"  
                             + "||     5: Print grid utility                            ||\n"
-                            + "||     6: Print grid utility                            ||\n"                               
+                            + "||     6: Print grid utility                            ||\n"  
+                            + "||     7: Change convergence threshold                  ||\n"                             
                             + "||    14: Quit                                          ||\n"
                             + "|========================================================|\n");
             System.out.printf("Enter your action: ");
@@ -166,6 +167,11 @@ public class Grid{
                 case 6  : {
                     System.out.println("Printing grid policy:");
                     print_policy(grid);
+                    break;
+                }
+                case 7  : {
+                    System.out.println("Please enter new threshold (Recommended 0.01 or below): ");
+                    error = sc.nextDouble();
                     break;
                 }
                 default :{
@@ -296,7 +302,7 @@ public class Grid{
     public static void update_grid(ArrayList<ArrayList<Cell>> grid, ArrayList<ArrayList<Double>> grid_util, boolean evaluate_policy){
         for(int i = 0; i< SIZE; i++){
             for(int j =0; j< SIZE; j++){
-                if(Math.abs(grid.get(i).get(j).get_util()-grid_util.get(i).get(j)) > ERROR && (value_iteration == true || evaluate_policy == true)) converge = false;
+                if(Math.abs(grid.get(i).get(j).get_util()-grid_util.get(i).get(j)) > error && (value_iteration == true || evaluate_policy == true)) converge = false;
                 grid.get(i).get(j).set_util(grid_util.get(i).get(j));
             }
         }
