@@ -2,16 +2,16 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class Grid{
-
-    static final int SIZE = 6;
     static final double DISCOUNT = 0.99;
     static final double STRAIGHT_PROB = 0.8;
-    static double error = 0.00001;
+    static final boolean DEBUG = false;
+    // static double error = Math.ulp(1.0); //minimal error that gives the optimal answer
+    static int SIZE = 6;
+    static double error = Math.ulp(1.0); 
+    static double policy_error = 0.01;
     static boolean converge = false;
-    static final Boolean DEBUG = false;
     static boolean value_iteration = false;
-    static final int POLICY_EVALUATE_COUNT = 500;
-    static int total_count = 0;
+    static long total_count = 0;
     static boolean update_policy = true;
     public static void main(String[] args) {
         Scanner sc = new Scanner (System.in);
@@ -30,7 +30,6 @@ public class Grid{
                 grid.get(i).add(new Cell(i,j));
             }
         }
-
         while(true){
             print_lines();
             System.out.printf("|========================================================|\n"
@@ -41,14 +40,14 @@ public class Grid{
                             + "||     3: Value Iteration                               ||\n"   
                             + "||     4: Policy Iteration                              ||\n"  
                             + "||     5: Print grid utility                            ||\n"
-                            + "||     6: Print grid utility                            ||\n"  
+                            + "||     6: Print grid policy                             ||\n"  
                             + "||     7: Change convergence threshold                  ||\n"                             
-                            + "||    14: Quit                                          ||\n"
+                            + "||     0: Quit                                          ||\n"
                             + "|========================================================|\n");
             System.out.printf("Enter your action: ");
             choice = sc.nextInt();
             sc.nextLine();
-            if(choice == 14) break;
+            if(choice == 0) break;
             switch(choice){
                 case 1  :{
                     grid = new ArrayList<ArrayList<Cell>>();
@@ -100,6 +99,7 @@ public class Grid{
                     break;
                 }
                 case 3  :{
+                    //Value Iteration
                     System.out.print("Enter number of iterations:");
                     total_count = sc.nextInt();
                     sc.nextLine();
@@ -110,6 +110,7 @@ public class Grid{
                     update_policy = true;
                     for(count = 0; count<total_count; count++){
                         if(converge) break;
+                        // print_cell_util(grid, 0, 0);
                         converge = true;
                         iterate_grid(grid,true);
                         if(DEBUG){
@@ -126,27 +127,29 @@ public class Grid{
                     break;
                 }
                 case 4  :{
-                    System.out.print("Enter number of iterations:");
+                    //Policy Iteration
+                    System.out.print("Enter number of policy improvements allowed:");
                     total_count = sc.nextInt();
                     sc.nextLine();
-                    int count, iterations = 0;
+                    int count;
+                    long iterations = 0;
                     long start_time = System.currentTimeMillis();
                     value_iteration = false;
                     converge = false;
                     update_policy = false;
                     for(count = 0; count<total_count; count++){
                         if(converge) break;
-                        for(int evaluate_count = 0; evaluate_count<POLICY_EVALUATE_COUNT-1; evaluate_count++){
-                            if(value_iteration) break;
-                            if(converge) {
-                                iterations += evaluate_count+1;
-                                break;
-                            }
+                        while(!converge){
+                            print_cell_util(grid, 0, 0);
                             converge = true;
+                            //policy evaluation until utility converges
                             iterate_grid(grid, false);
+                            iterations++;
                         }
                         converge = true;
+                        //policy improvement
                         iterate_grid(grid, true);
+                        iterations++;
                         if(DEBUG){
                             System.out.printf("-----------------------ITERATION #%d --------------------------", iterations);
                             print_util(grid);
@@ -156,16 +159,14 @@ public class Grid{
                     print_util(grid);
                     print_policy(grid);
                     long duration = System.currentTimeMillis()-start_time;
-                    System.out.printf("Policy Iteration took %d iterations\nElapsed for a total of %d.%d seconds\n",iterations,duration/1000,duration%1000);
+                    System.out.printf("Policy Iteration took %d policy improvements, %d iterations\nElapsed for a total of %d.%d seconds\n", count, iterations,duration/1000,duration%1000);
                     break;
                 }
                 case 5  : {
-                    System.out.println("Printing grid utility:");
                     print_util(grid);
                     break;
                 }
                 case 6  : {
-                    System.out.println("Printing grid policy:");
                     print_policy(grid);
                     break;
                 }
@@ -175,23 +176,13 @@ public class Grid{
                     break;
                 }
                 default :{
-                    System.out.println("Wrong selection boy");
+                    System.out.println("Invalid selection");
                     break;
                 }
             }
             System.out.print("Press ok to continue: ");
             sc.nextLine();
         }
-    }
-
-    public static void print_lines(){
-        for(int i = 0; i< 10; i++){
-            System.out.println("");
-        }
-    }
-
-    public static Cell get_cell(ArrayList<ArrayList<Cell>> grid, int[] position){
-        return grid.get(position[0]).get(position[1]);
     }
 
     /*
@@ -214,12 +205,11 @@ public class Grid{
             for(Cell selected: row){
                 position[0] = selected.get_row();
                 position[1] = selected.get_col();
-                new_util = get_utility(grid, grid_policy, position);
-                grid_util.get(position[0]).add(new_util);
+                get_utility(grid, grid_util, grid_policy, position);
             }
         }
         update_grid(grid, grid_util, !update_policy);
-        //if policy evaluation, update policy once required amount of evaluations is hit.
+        //updates policy if value iteration is used or policy improvement is underway
         if(value_iteration == true || update_policy == true) update_policy(grid, grid_policy);
     }
 
@@ -228,14 +218,17 @@ public class Grid{
      * Policy (Choice) of each state is updated in grid_policy.
      * Utility is returned.
      */
-    public static double get_utility(ArrayList<ArrayList<Cell>> grid, ArrayList<ArrayList<Choice>> grid_policy, int[] position){
-        double util_up=0, util_down=0, util_left=0, util_right=0;
+    public static void get_utility(ArrayList<ArrayList<Cell>> grid, ArrayList<ArrayList<Double>> grid_util, ArrayList<ArrayList<Choice>> grid_policy, int[] position){
+        double util_up=0, util_down=0, util_left=0, util_right=0, new_util = 0;
         double weighted_util_left=0, weighted_util_right=0, weighted_util_up=0, weighted_util_down=0, weighted_util_choice=0;
 
         if(get_cell(grid, position).is_wall()) {
             grid_policy.get(position[0]).add(Choice.WALL);
-            return 0;
+            grid_util.get(position[0]).add(0.0);
+            return;
         }
+
+        //checks if neighbouring blocks are walls or out of bounds
         if(position[0] == 0) util_up = get_cell(grid,position).get_util();
         else if(grid.get(position[0]-1).get(position[1]).is_wall()) {
             util_up = get_cell(grid,position).get_util();
@@ -276,33 +269,39 @@ public class Grid{
         weighted_util_right = STRAIGHT_PROB*util_right + (1-STRAIGHT_PROB)*(util_up+util_down)/2;
         weighted_util_choice = Math.max(Math.max(weighted_util_down, weighted_util_left),Math.max(weighted_util_up, weighted_util_right));
         
+        //saves current iteration's best choice in grid_policy. NOTE: does not update main grid's policy.
         if(weighted_util_choice == weighted_util_up) grid_policy.get(position[0]).add(Choice.UP);
         else if(weighted_util_choice == weighted_util_down) grid_policy.get(position[0]).add(Choice.DOWN);
         else if(weighted_util_choice == weighted_util_left) grid_policy.get(position[0]).add(Choice.LEFT);
         else grid_policy.get(position[0]).add(Choice.RIGHT);
 
         if(value_iteration){
-            return weighted_util_choice*DISCOUNT + get_cell(grid,position).get_reward();
+            new_util = weighted_util_choice*DISCOUNT + get_cell(grid,position).get_reward();
         }
+        //returns current policy's utility if policy iteration is used.
         else{
             switch(get_cell(grid, position).get_policy()){
-                case UP: return weighted_util_up*DISCOUNT + get_cell(grid,position).get_reward();
-                case DOWN: return weighted_util_down*DISCOUNT + get_cell(grid,position).get_reward();
-                case LEFT: return weighted_util_left*DISCOUNT + get_cell(grid,position).get_reward();
-                case RIGHT: return weighted_util_right*DISCOUNT + get_cell(grid,position).get_reward(); 
-                default: return weighted_util_up*DISCOUNT + get_cell(grid,position).get_reward(); 
+                case UP: new_util = weighted_util_up*DISCOUNT + get_cell(grid,position).get_reward(); break;
+                case DOWN: new_util = weighted_util_down*DISCOUNT + get_cell(grid,position).get_reward(); break;
+                case LEFT: new_util = weighted_util_left*DISCOUNT + get_cell(grid,position).get_reward(); break;
+                case RIGHT: new_util = weighted_util_right*DISCOUNT + get_cell(grid,position).get_reward(); break;
+                default: new_util = weighted_util_up*DISCOUNT + get_cell(grid,position).get_reward(); break;
             }
         }
+        grid_util.get(position[0]).add(new_util);
     }
 
     /*
      * Updates the grid's utility based on current iteration's newest utility.
      * Convergence logic is also present.
+     * evaluate_policy - whether or not to update convergence based on error, false when policy improvement is underway.
      */
     public static void update_grid(ArrayList<ArrayList<Cell>> grid, ArrayList<ArrayList<Double>> grid_util, boolean evaluate_policy){
         for(int i = 0; i< SIZE; i++){
             for(int j =0; j< SIZE; j++){
-                if(Math.abs(grid.get(i).get(j).get_util()-grid_util.get(i).get(j)) > error && (value_iteration == true || evaluate_policy == true)) converge = false;
+                //Converge threshold depending on value iteration or policy iteration
+                if(Math.abs(grid.get(i).get(j).get_util()-grid_util.get(i).get(j)) > error && value_iteration == true) converge = false;
+                else if(Math.abs(grid.get(i).get(j).get_util()-grid_util.get(i).get(j)) > policy_error && evaluate_policy == true) converge = false;
                 grid.get(i).get(j).set_util(grid_util.get(i).get(j));
             }
         }
@@ -321,7 +320,12 @@ public class Grid{
         }
     }
 
+    public static Cell get_cell(ArrayList<ArrayList<Cell>> grid, int[] position){
+        return grid.get(position[0]).get(position[1]);
+    }
+
     public static void print_util(ArrayList<ArrayList<Cell>> grid){
+        System.out.println("Printing grid utility:");
         System.out.println("-------------------------------------------------------");
         for(int i=0; i<grid.size(); i++){
             for(int j=0; j<grid.get(i).size(); j++){
@@ -335,6 +339,7 @@ public class Grid{
     }
 
     public static void print_policy(ArrayList<ArrayList<Cell>> grid){
+        System.out.println("Printing grid policy:");
         System.out.println("-------------------------------------------------------");
         for(int i=0; i<grid.size(); i++){
             for(int j=0; j<grid.get(i).size(); j++){
@@ -344,6 +349,16 @@ public class Grid{
             }
             System.out.println("");
             System.out.println("-------------------------------------------------------");
+        }
+    }
+
+    public static void print_cell_util(ArrayList<ArrayList<Cell>> grid, int row, int col){
+        System.out.println(grid.get(row).get(col).get_util());
+    }
+
+    public static void print_lines(){
+        for(int i = 0; i< 10; i++){
+            System.out.println("");
         }
     }
 }
