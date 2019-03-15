@@ -7,7 +7,7 @@ public class Grid{
     static final boolean DEBUG = false;
     static final int MAX_EVALUATION = 10;
     // static double error = Math.ulp(1.0); //minimal error that gives the optimal answer
-    static int SIZE = 10;
+    static int SIZE = 6;
     static double error = Math.ulp(1.0); 
     static double policy_error = Math.ulp(1.0);
     static boolean converge = false;
@@ -59,56 +59,33 @@ public class Grid{
                     }
                     grid.get(0).get(0).set_type(Type.GREEN);
                     grid.get(0).get(2).set_type(Type.GREEN);
-                    grid.get(0).get(8).set_type(Type.GREEN);
+                    grid.get(0).get(4).set_type(Type.GREEN);
                     grid.get(1).get(0).set_type(Type.GREEN);
+                    grid.get(1).get(3).set_type(Type.GREEN);
                     grid.get(1).get(5).set_type(Type.GREEN);
                     grid.get(2).get(1).set_type(Type.GREEN);
-                    grid.get(2).get(3).set_type(Type.GREEN);
                     grid.get(3).get(2).set_type(Type.GREEN);
+                    grid.get(4).get(1).set_type(Type.GREEN);
                     grid.get(4).get(4).set_type(Type.GREEN);
-                    grid.get(5).get(8).set_type(Type.GREEN);
-                    grid.get(6).get(1).set_type(Type.GREEN);
-                    grid.get(6).get(6).set_type(Type.GREEN);
-                    grid.get(7).get(2).set_type(Type.GREEN);
-                    grid.get(7).get(8).set_type(Type.GREEN);
-                    grid.get(9).get(3).set_type(Type.GREEN);
-                    grid.get(9).get(9).set_type(Type.GREEN);
+
 
                     grid.get(0).get(1).set_type(Type.WALL);
-                    grid.get(1).get(9).set_type(Type.WALL);
+                    grid.get(0).get(3).set_type(Type.WALL);
                     grid.get(2).get(4).set_type(Type.WALL);
-                    grid.get(2).get(8).set_type(Type.WALL);
-                    grid.get(3).get(1).set_type(Type.WALL);
+                    grid.get(3).get(0).set_type(Type.WALL);
                     grid.get(3).get(3).set_type(Type.WALL);
-                    grid.get(3).get(7).set_type(Type.WALL);
                     grid.get(4).get(2).set_type(Type.WALL);
-                    grid.get(4).get(6).set_type(Type.WALL);
                     grid.get(5).get(1).set_type(Type.WALL);
                     grid.get(5).get(5).set_type(Type.WALL);
-                    grid.get(6).get(2).set_type(Type.WALL);
-                    grid.get(6).get(4).set_type(Type.WALL);
 
-                    grid.get(0).get(9).set_type(Type.ORANGE);
-                    grid.get(1).get(7).set_type(Type.ORANGE);
+                    grid.get(1).get(2).set_type(Type.ORANGE);
+                    grid.get(1).get(4).set_type(Type.ORANGE);
                     grid.get(2).get(0).set_type(Type.ORANGE);
-                    grid.get(2).get(2).set_type(Type.ORANGE);
-                    grid.get(2).get(6).set_type(Type.ORANGE);
                     grid.get(3).get(4).set_type(Type.ORANGE);
                     grid.get(3).get(5).set_type(Type.ORANGE);
-                    grid.get(3).get(9).set_type(Type.ORANGE);
                     grid.get(4).get(0).set_type(Type.ORANGE);
-                    grid.get(4).get(7).set_type(Type.ORANGE);
                     grid.get(5).get(0).set_type(Type.ORANGE);
                     grid.get(5).get(2).set_type(Type.ORANGE);
-                    grid.get(6).get(0).set_type(Type.ORANGE);
-                    grid.get(7).get(0).set_type(Type.ORANGE);
-                    grid.get(7).get(4).set_type(Type.ORANGE);
-                    grid.get(7).get(9).set_type(Type.ORANGE);
-                    grid.get(8).get(5).set_type(Type.ORANGE);
-                    grid.get(8).get(6).set_type(Type.ORANGE);
-                    grid.get(9).get(0).set_type(Type.ORANGE);
-                    grid.get(9).get(1).set_type(Type.ORANGE);
-                    grid.get(9).get(8).set_type(Type.ORANGE);
                     break;
                 }
                 case 2  :{          
