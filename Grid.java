@@ -12,7 +12,6 @@ public class Grid{
     static boolean converge = false;
     static boolean value_iteration = false;
     static long total_count = 0;
-    static boolean update_policy = true;
     public static void main(String[] args) {
         Scanner sc = new Scanner (System.in);
 
@@ -107,7 +106,6 @@ public class Grid{
                     long start_time = System.currentTimeMillis();
                     value_iteration = true;
                     converge = false;
-                    update_policy = true;
                     for(count = 0; count<total_count; count++){
                         if(converge) break;
                         // print_cell_util(grid, 0, 0);
@@ -136,7 +134,6 @@ public class Grid{
                     long start_time = System.currentTimeMillis();
                     value_iteration = false;
                     converge = false;
-                    update_policy = false;
                     for(count = 0; count<total_count; count++){
                         if(converge) break;
                         while(!converge){
