@@ -5,10 +5,11 @@ public class Grid{
     static final double DISCOUNT = 0.99;
     static final double STRAIGHT_PROB = 0.8;
     static final boolean DEBUG = false;
+    static final int MAX_EVALUATION = 10;
     // static double error = Math.ulp(1.0); //minimal error that gives the optimal answer
     static int SIZE = 6;
     static double error = Math.ulp(1.0); 
-    static double policy_error = 0.01;
+    static double policy_error = Math.ulp(1.0);
     static boolean converge = false;
     static boolean value_iteration = false;
     static long total_count = 0;
@@ -132,16 +133,19 @@ public class Grid{
                     int count;
                     long iterations = 0;
                     long start_time = System.currentTimeMillis();
+                    int evaluate_count = 0;
                     value_iteration = false;
                     converge = false;
                     for(count = 0; count<total_count; count++){
                         if(converge) break;
-                        while(!converge){
-                            print_cell_util(grid, 0, 0);
+                        evaluate_count = 0;
+                        while(!converge && evaluate_count < MAX_EVALUATION){
+                            // print_cell_util(grid, 0, 0);
                             converge = true;
                             //policy evaluation until utility converges
                             iterate_grid(grid, false);
                             iterations++;
+                            evaluate_count++;
                         }
                         converge = true;
                         //policy improvement
