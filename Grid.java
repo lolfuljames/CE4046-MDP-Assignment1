@@ -5,7 +5,7 @@ public class Grid{
     static final double DISCOUNT = 0.99;
     static final double STRAIGHT_PROB = 0.8;
     static final boolean DEBUG = false;
-    static final int MAX_EVALUATION = 10;
+    static final int MAX_EVALUATION = 30;
     // static double error = Math.ulp(1.0); //minimal error that gives the optimal answer
     static int SIZE = 10;
     static double error = Math.ulp(1.0); 
